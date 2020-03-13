@@ -42,7 +42,7 @@ func main() {
 	projects := map[string]*projectInfo{}
 	projectNames := []string{}
 
-	for page := 0; !pageEmpty && len(projects) <= 15; page++ {
+	for page := 0; !pageEmpty; page++ {
 		opts.Page = page
 		projectList, _, err := git.Projects.ListProjects(opts)
 		if err != nil {
