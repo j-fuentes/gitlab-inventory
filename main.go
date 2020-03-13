@@ -93,9 +93,7 @@ func checkHasCode(p *gitlab.Project) bool {
 	if p.Statistics == nil {
 		return true
 	}
-	// We assume a project with just a few commits has no code (maybe just issue templates, readmes, etc).
-	// A project could have a little bit of real code in just a few commits, but it is ok to assume that is irrelevant.
-	return p.Statistics.CommitCount > 10
+	return p.Statistics.CommitCount > 0
 }
 
 func checkHasPipelines(p *gitlab.Project) bool {
