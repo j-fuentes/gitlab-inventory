@@ -64,6 +64,7 @@ func main() {
 	}
 
 	sort.Strings(projectNames)
+	fmt.Printf("\n\n")
 	for idx, projectName := range projectNames {
 		project := projects[projectName]
 		fmt.Printf("#%d ID:%d Name:%q HasIssues:%v HasCode:%v HasPipelines:%v LastActivity: %q\n", idx, project.ID, project.NameWithNamespace, project.hasIssues, project.hasCode, project.hasPipelines, project.LastActivityAt)
