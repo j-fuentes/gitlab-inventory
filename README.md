@@ -1,4 +1,4 @@
-# Gitlab project inventary
+# Gitlab project inventory
 
 This generates a list of all the projects in your Gitlab instance.
 
