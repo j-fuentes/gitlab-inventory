@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"time"
 
 	"github.com/xanzy/go-gitlab"
 )
@@ -34,6 +35,8 @@ func main() {
 	git = gitlab.NewClient(nil, token)
 	git.SetBaseURL(baseURL)
 
+	fmt.Printf("Scanning %q (%s)\n\n", baseURL, time.Now())
+
 	pageEmpty := false
 	opts := &gitlab.ListProjectsOptions{
 		Archived:   &False,
@@ -42,6 +45,7 @@ func main() {
 	projects := map[string]*projectInfo{}
 	projectNames := []string{}
 
+	printStatus(0, 0)
 	for page := 0; !pageEmpty; page++ {
 		opts.Page = page
 		projectList, _, err := git.Projects.ListProjects(opts)
@@ -52,7 +56,6 @@ func main() {
 		pageEmpty = len(projectList) == 0
 
 		for idx, project := range projectList {
-			printStatus(len(projects), len(projects)+len(projectList)-idx)
 			projectNames = append(projectNames, project.NameWithNamespace)
 			projects[project.NameWithNamespace] = &projectInfo{
 				Project:      project,
@@ -60,6 +63,7 @@ func main() {
 				hasIssues:    checkHasIssues(project),
 				hasPipelines: checkHasPipelines(project),
 			}
+			printStatus(len(projects), len(projects)+len(projectList)-idx)
 		}
 	}
 
@@ -85,9 +89,9 @@ func checkHasIssues(p *gitlab.Project) bool {
 }
 
 func checkHasCode(p *gitlab.Project) bool {
-	// Apparently old projects with low activity have no stats. It is reasonable to report them as "does not have code".
+	// In case there are not stats available, we go for the most conservative option.
 	if p.Statistics == nil {
-		return false
+		return true
 	}
 	// We assume a project with just a few commits has no code (maybe just issue templates, readmes, etc).
 	// A project could have a little bit of real code in just a few commits, but it is ok to assume that is irrelevant.
